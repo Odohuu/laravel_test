@@ -17,6 +17,9 @@ use App\Role;
 //     return view('welcome');
 // });
 
+Route::get('about', function(){
+    return view('about');
+})
 /*
 |--------------------------------------------------------------------------
 | Application Routes
