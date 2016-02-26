@@ -1,4 +1,6 @@
-<?php namespace App\Http\Middleware;
+<?php 
+
+namespace App\Http\Middleware;
 
 // First copy this file into your middleware directoy
 
@@ -13,7 +15,7 @@ class CheckRole{
 	 * @param  \Closure  $next
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next)
+	public function handle($request, Closure $next, $roles)
 	{
 		// Get the required roles from the route
 		$roles = $this->getRequiredRoleForRoute($request->route());
