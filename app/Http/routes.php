@@ -56,5 +56,5 @@ Route::group(['middleware' => 'web'], function () {
 
 Route::group(['middleware' => 'web', 'auth'], function () {
     Route::get('user/{id}/editProfile', 'UserController@editProfile');
-    Route::PATCH('user/{id}', 'UserController@update');
+    Route::PUT('user/{id}', 'UserController@update');
 });

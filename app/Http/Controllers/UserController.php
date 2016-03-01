@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Validator;
 use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -23,7 +24,16 @@ class UserController extends Controller
     	$user = User::findOrFail($id);
     	$currentUser = Auth::user();
 
-    	return view('users.showProfile', compact('user','currentUser'));
+        $gravatar = $this->gravatar_link($user->email);
+
+    	return view('users.showProfile', compact('user','currentUser','gravatar'));
+    }
+
+    public function gravatar_link($email)
+    {
+        $email = md5($email);
+
+        return "//www.gravatar.com/avatar/{$email}";
     }
 
     public function editProfile($id)
@@ -31,26 +41,25 @@ class UserController extends Controller
     	return view('users.editProfile', ['user' => User::findOrFail($id)]);
     }
 
-    public function update($id)
+    public function update($id, Request $request)
     {
-
+        // dd($request->all());
     	$user = User::findOrFail($id);
-    	if (Request::HasFile('avatar'))
-	    {
-	    	if ($user->avatar != null)
-	        {
-	            $old_image = $user->avatar;
-	        }
-	       	$file = Request::file('avatar');
-                    
-	        $image_name = time() . '-' . $file->getClientOriginalName();
+    	
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|confirmed|min:6',
+        ]);
 
-	        $file->move(public_path() . $image_name);
+        if ($validator->fails()) {
+            return redirect('user/'.$id.'/editProfile')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
 
-	        $image_alter = Image::make(sprintf(public_path() . '%s', $image_name))->resize(120, 120)->save();
+	    $user->update($request->all());
 
-	    }
-	    $user->save();
     	return redirect('/user/'.$id);
     	// Avatar::create('Susilo Bambang Yudhoyono')->save('sample.jpg', 100);
     }
